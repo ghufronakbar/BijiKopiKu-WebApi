@@ -35,7 +35,11 @@ async function GET(id: string) {
           createdAt: "desc",
         },
         include: {
-          engineer: true,
+          orderItems: {
+            include: {
+              coffee: true,
+            },
+          },
         },
       },
     },

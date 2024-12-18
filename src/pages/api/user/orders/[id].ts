@@ -30,7 +30,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 async function GET(id: string) {
   return await prisma.order.findUnique({
     include: {
-      engineer: true,
+      orderItems: {
+        include: {
+          coffee: true,
+        },
+      },
     },
     where: { id },
   });

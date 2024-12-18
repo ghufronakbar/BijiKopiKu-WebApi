@@ -10,8 +10,8 @@ export default async function handler(
 ) {
   try {
     if (req.method !== "POST") return res.status(405).end();
-    const { email, password, name, phone } = req.body;
-    if (!email || !password || !name || !phone) {
+    const { email, password, name } = req.body;
+    if (!email || !password || !name) {
       return res
         .status(200)
         .json({ success: false, message: "Harap isi semua field" });
@@ -28,7 +28,6 @@ export default async function handler(
         email,
         password: await bcrypt.hash(password, 10),
         name,
-        phone,
       },
     });
 

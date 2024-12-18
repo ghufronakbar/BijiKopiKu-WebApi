@@ -26,7 +26,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 async function GET(userId: string) {
   return await prisma.order.findMany({
     include: {
-      engineer: true,
+      orderItems: {
+        include: {
+          coffee: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
