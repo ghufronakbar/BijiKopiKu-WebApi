@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id           String      @id @default(uuid())
+  userId       String
+  paymentProof String?     @db.Text
+  status       OrderStatus @default(Dipesan)
+  total        Float
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  orderItems OrderItem[]
+  user       User        @relation(fields: [userId], references: [id])
+}
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId  String
+  coffeeId String
+  quantity Int
+  total    Float
+  order    Order  @relation(fields: [orderId], references: [id])
+  coffee   Coffee @relation(fields: [coffeeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  Dipesan // Saat pertama kali memesan
+  Dibayar // Ditandai sudah dibayar oleh user
+  Dibatalkan // Saat user membatalkan pesanan
+  Ditolak // Saat admin mengecek pembayaran namun tidak sah
+  Diterima // Saat admin mengecek pembayaran dan sah, user dapat mengambil ditempat
+  Selesai // Saat user telah mengambil barang
+}
+
+model Coffee {
+  id                    String     @id @default(uuid())
+  name                  String
+  price                 Float
+  isForCoffeeEnthusiast Boolean // Apakah kamu sering konsumsi kopi?
+  type                  CoffeeType // Jenis kopi mana yang kamu suka?
+  taste                 TasteLevel // Tingkat rasa kopi mana yang kamu suka
+  isItForSweet          Boolean //Apa kamu menambahkan gula atau pemanis dalam kopimu?
+  flavor                Flavor //Bagaimana kamu menggambarkan rasa kopi yang paling kamu sukai?  
+
+  orderItems OrderItem[]
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CoffeeType {
+  Arabica
+  Robusta
+}
+
+enum TasteLevel {
+  Light
+  Medium
+  Strong
+}
+
+enum Flavor {
+  Asam
+  Pahit
+  Karamel
+  Coklat
+  Buah
+  Kacang
+}
