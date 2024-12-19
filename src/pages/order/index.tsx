@@ -113,14 +113,16 @@ const OrderPage = () => {
                   </td>
                   <td className="px-4 py-2">{formatDate(item.createdAt)}</td>
                   <td className="px-4 py-2">
-                    <span
-                      className={
-                        "font-semibold px-2 py-1 rounded-md " +
-                        colorStatus(item.status)
-                      }
-                    >
-                      {item.status}
-                    </span>
+                    <div className="flex items-center justify-center">
+                      <span
+                        className={
+                          "font-semibold px-2 py-1 rounded-md " +
+                          colorStatus(item.status)
+                        }
+                      >
+                        {item.status}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-4 py-2">
                     <Link href={`/order/${item.id}`}>

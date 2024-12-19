@@ -35,7 +35,7 @@ const ModalAction = ({
           </button>
         </div>
         <div className="p-4">
-          <p className="text-sm">{children}</p>
+          <div className="text-sm">{children}</div>
         </div>
         <div className="flex justify-end gap-2 p-4 border-t">
           <Button onClick={onClose} status="gray">

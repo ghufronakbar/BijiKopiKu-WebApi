@@ -55,9 +55,13 @@ const DetailCoffeePage = () => {
         return "bg-gray-100 text-gray-600";
     }
   };
-
+  
   if (!item) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-full h-screen bg-accent text-primary flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   return (

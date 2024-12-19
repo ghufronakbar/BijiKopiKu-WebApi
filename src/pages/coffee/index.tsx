@@ -1,7 +1,11 @@
+import Button from "@/components/Button";
+import ModalAction from "@/components/ModalAction";
+import ModalConfirmation from "@/components/ModalConfirmation";
 import Navigation from "@/components/Navigation";
 import { Toaster } from "@/components/ui/toaster";
 import axiosInstance from "@/config/axiosInstance";
-import { ResOk } from "@/models/Api";
+import toast from "@/helper/toast";
+import { ResErr, ResOk } from "@/models/Api";
 import formatDate from "@/utils/format/formatDate";
 import formatRupiah from "@/utils/format/formatRupiah";
 import { Coffee } from "@prisma/client";
@@ -14,9 +18,34 @@ interface ResCoffee extends Coffee {
   };
 }
 
+interface CoffeeDTO {
+  id: string;
+  name: string;
+  price: number;
+  isForCoffeeEnthusiast: boolean;
+  type: string;
+  taste: string;
+  isItForSweet: boolean;
+  flavor: string;
+}
+
+const initCoffeeDTO: CoffeeDTO = {
+  id: "",
+  name: "",
+  price: 0,
+  isForCoffeeEnthusiast: false,
+  type: "Arabica",
+  taste: "Light",
+  isItForSweet: false,
+  flavor: "Asam",
+};
+
 const CoffeePage = () => {
   const [data, setData] = useState<ResCoffee[]>([]);
   const [search, setSearch] = useState("");
+  const [form, setForm] = useState<CoffeeDTO>(initCoffeeDTO);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string>();
   const filteredData = data.filter(
     (item) =>
       item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -33,6 +62,46 @@ const CoffeePage = () => {
     }
   };
 
+  const handleCreate = async () => {
+    try {
+      setIsOpen(false);
+      await axiosInstance.post("/coffee", form);
+      fetchData();
+      setForm(initCoffeeDTO);
+      toast.success("Produk berhasil ditambahkan");
+    } catch (error) {
+      console.log(error);
+      const err = error as ResErr;
+      toast.error(err?.response?.data?.message);
+    }
+  };
+
+  const handleEdit = async () => {
+    try {
+      setIsOpen(false);
+      await axiosInstance.put(`/coffee/${form.id}`, form);
+      fetchData();
+      setForm(initCoffeeDTO);
+      toast.success("Produk berhasil diedit");
+    } catch (error) {
+      console.log(error);
+      const err = error as ResErr;
+      toast.error(err?.response?.data?.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setSelectedId(undefined);
+      await axiosInstance.delete(`/coffee/${selectedId}`);
+      toast.success("Produk berhasil dihapus");
+      fetchData();
+    } catch (error) {
+      const err = error as ResErr;
+      toast.error(err?.response?.data?.message);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -40,13 +109,17 @@ const CoffeePage = () => {
   return (
     <Navigation title="Produk">
       <div className="w-full flex flex-col gap-2">
-        <input
-          type="text"
-          placeholder="Cari produk..."
-          className="w-full md:w-1/2 lg:w-1/3 p-2 rounded-md border border-gray-300 bg-white"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="flex flex-row items-center justify-between">
+          <input
+            type="text"
+            placeholder="Cari produk..."
+            className="w-full md:w-1/2 lg:w-1/3 p-2 rounded-md border border-gray-300 bg-white"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <Button onClick={() => setIsOpen(true)}>Tambah Produk</Button>
+        </div>
 
         <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
           <table className="min-w-full table-auto">
@@ -80,6 +153,21 @@ const CoffeePage = () => {
                   <td className="px-4 py-2">{formatDate(item.updatedAt)}</td>
 
                   <td className="px-4 py-2">
+                    <button
+                      className="bg-white text-red-500 px-4 py-2 rounded-md shadow-sm hover:bg-gray-100"
+                      onClick={() => setSelectedId(item.id)}
+                    >
+                      Hapus
+                    </button>
+                    <button
+                      className="bg-white text-teal-500 px-4 py-2 rounded-md shadow-sm hover:bg-gray-100"
+                      onClick={() => {
+                        setForm(item);
+                        setIsOpen(true);
+                      }}
+                    >
+                      Detail
+                    </button>
                     <Link href={`/coffee/${item.id}`}>
                       <button className="bg-white text-primary px-4 py-2 rounded-md shadow-sm hover:bg-gray-100">
                         Detail
@@ -92,6 +180,96 @@ const CoffeePage = () => {
           </table>
         </div>
       </div>
+      <ModalAction
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setForm(initCoffeeDTO);
+        }}
+        title={form.id ? "Edit Produk" : "Tambah Produk"}
+        confirmText="Simpan"
+        onConfirm={form.id ? handleEdit : handleCreate}
+      >
+        <div className="flex flex-col w-full gap-2">
+          <label className="text-black">Nama</label>
+          <input
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <label className="text-black">Harga</label>
+          <input
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.price}
+            onChange={(e) =>
+              setForm({ ...form, price: Number(e.target.value) })
+            }
+          />
+          <label className="text-black">Cocok untuk Pecinta Kopi</label>
+          <select
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.isForCoffeeEnthusiast ? "Iya" : "Tidak"}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                isForCoffeeEnthusiast: e.target.value === "Iya",
+              })
+            }
+          >
+            <option value="Iya">Iya</option>
+            <option value="Tidak">Tidak</option>
+          </select>
+          <label className="text-black">Jenis Kopi</label>
+          <select
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.type}
+            onChange={(e) => setForm({ ...form, type: e.target.value })}
+          >
+            <option value="Arabica">Arabica</option>
+            <option value="Robusta">Robusta</option>
+          </select>
+          <label className="text-black">Tipe Rasa Kopi</label>
+          <select
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.taste}
+            onChange={(e) => setForm({ ...form, taste: e.target.value })}
+          >
+            <option value="Light">Light</option>
+            <option value="Medium">Medium</option>
+            <option value="Strong">Strong</option>
+          </select>
+          <label className="text-black">Cocok untuk Manis</label>
+          <select
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.isItForSweet ? "Iya" : "Tidak"}
+            onChange={(e) =>
+              setForm({ ...form, isItForSweet: e.target.value === "Iya" })
+            }
+          >
+            <option value="Iya">Iya</option>
+            <option value="Tidak">Tidak</option>
+          </select>
+          <label className="text-black">Rasa Kopi</label>
+          <select
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.flavor}
+            onChange={(e) => setForm({ ...form, flavor: e.target.value })}
+          >
+            <option value="Asam">Asam</option>
+            <option value="Pahit">Pahit</option>
+            <option value="Karamel">Karamel</option>
+            <option value="Coklat">Coklat</option>
+            <option value="Buah">Buah</option>
+            <option value="Kacang">Kacang</option>
+          </select>
+        </div>
+      </ModalAction>
+      <ModalConfirmation
+        title="Apakah anda yakin ingin menghapus produk ini?"
+        isOpen={!!selectedId}
+        onClose={() => setSelectedId(undefined)}
+        onConfirm={handleDelete}
+      />
       <Toaster />
     </Navigation>
   );

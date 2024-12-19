@@ -49,11 +49,11 @@ const LoginPage = () => {
         borderRadius="lg"
         boxShadow="lg"
       >
-        <form onSubmit={onSubmit} className="w-full">
+        <form onSubmit={(e) => onSubmit(e)} className="w-full">
           <Stack gap="4" align="flex-start" className="w-full">
             <div className="flex flex-row items-center justify-center gap-2 w-full my-4">
               <GiCoffeeBeans className="text-white w-16 h-16" />
-              <h1 className="text-primary text-3xl font-black">BIJIKOPI.KU</h1>
+              <h1 className="text-white text-3xl font-black">BIJIKOPI.KU</h1>
             </div>
             <h2 className="text-2xl font-bold text-white">Login</h2>
             <Field label="Email" className="text-white">

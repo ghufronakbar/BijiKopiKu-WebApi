@@ -7,8 +7,7 @@ interface NavItem {
   href: string;
 }
 
-const navItems: NavItem[] = [
-  { name: "Dashboard", href: "/dashboard" },
+const navItems: NavItem[] = [  
   { name: "Produk", href: "/coffee" },
   { name: "Pesanan", href: "/order" },
   { name: "Logout", href: "/logout" },
