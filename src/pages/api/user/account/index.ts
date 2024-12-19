@@ -7,7 +7,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === "GET") {
       const id = req.decoded?.id;
-      console.log({ id });
+      if (!id)
+        return res
+          .status(200)
+          .json({ success: false, message: "Harap login terlebih dahulu" });
       const user = await GET(id);
       if (!user) {
         return res
@@ -17,9 +20,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res
         .status(200)
         .json({ success: true, message: "Success", data: user });
-    } else if (req.method === "PUT") {
+    }
+    if (req.method === "PUT") {
       const { email, name, phone } = req.body;
       const id = req.decoded?.id;
+      if (!id)
+        return res
+          .status(200)
+          .json({ success: false, message: "Harap login terlebih dahulu" });
       if (!email || !name || !phone) {
         return res
           .status(200)
@@ -41,9 +49,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         message: "Berhasil mengedit profil",
         data: create,
       });
-    } else if (req.method === "PATCH") {
+    }
+    if (req.method === "PATCH") {
       const { newPassword, oldPassword, confirmPassword } = req.body;
       const id = req.decoded?.id;
+      if (!id) {
+        return res
+          .status(200)
+          .json({ success: false, message: "Harap login terlebih dahulu" });
+      }
       if (!newPassword || !oldPassword || !confirmPassword) {
         return res
           .status(200)

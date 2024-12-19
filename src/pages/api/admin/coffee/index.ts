@@ -21,13 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         flavor,
       } = req.body as CoffeeDTO;
       console.log(req.body);
-      if (
-        !name ||
-        !price ||        
-        !type ||
-        !taste ||        
-        !flavor
-      ) {
+      if (!name || !price || !type || !taste || !flavor) {
         return res
           .status(400)
           .json({ status: 400, message: "Harap isi semua field" });
@@ -80,6 +74,9 @@ async function GET() {
     },
     orderBy: {
       createdAt: "desc",
+    },
+    where: {
+      isDeleted: false,
     },
   });
 }

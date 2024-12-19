@@ -6,6 +6,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === "GET") {
       const id = req.decoded?.id;
+      if (!id)
+        return res
+          .status(200)
+          .json({ success: false, message: "Pengguna tidak ditemukan" });
       const orders = await GET(id);
       return res
         .status(200)

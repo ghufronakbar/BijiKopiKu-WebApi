@@ -7,20 +7,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { id } = req.query as { id: string };
     if (req.method === "GET") {
-      const order = await getById(id);
-      if (!order)
+      const coffee = await getById(id);
+      if (!coffee || coffee?.isDeleted)
         return res
           .status(404)
-          .json({ status: 404, message: "Pesanan tidak ditemukan" });
+          .json({ status: 404, message: "Data tidak ditemukan" });
       return res
         .status(200)
-        .json({ status: 200, message: "Success", data: order });
+        .json({ status: 200, message: "Success", data: coffee });
     } else if (req.method === "DELETE") {
       const check = await getById(id);
       if (!check)
         return res
           .status(404)
-          .json({ status: 404, message: "Pesanan tidak ditemukan" });
+          .json({ status: 404, message: "Data tidak ditemukan" });
       const deleted = await deleteById(id);
       return res
         .status(200)
@@ -87,7 +87,10 @@ async function getById(id: string) {
 }
 
 async function deleteById(id: string) {
-  return await prisma.coffee.delete({ where: { id } });
+  return await prisma.coffee.update({
+    where: { id },
+    data: { isDeleted: true },
+  });
 }
 
 interface CoffeeDTO {

@@ -8,55 +8,24 @@ export default function userAuth(
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const { authorization } = req.headers;
 
-    if (!authorization) {
-      return res.status(401).json({
-        status: 401,
-        message: "Unauthorized",
-      });
-    }
-
     try {
-      const token = authorization.split(" ")[1];
+      const token = authorization?.split(" ")?.[1];
 
-      if (!token) {
-        return res.status(401).json({
-          status: 401,
-          message: "Unauthorized",
-        });
-      }
-
-      const decoded = jwt.verify(token, JWT_SECRET!) as {
-        id: string;
-        role: "ADMIN" | "USER";
-      };
-
-      if (!decoded) {
-        return res.status(401).json({
-          status: 401,
-          message: "Unauthorized",
-        });
-      }
-      if (!decoded.id) {
-        return res.status(401).json({
-          status: 401,
-          message: "Unauthorized",
-        });
-      }
-      if (decoded && decoded.role !== "USER") {
-        return res.status(401).json({
-          status: 401,
-          message: "Unauthorized",
-        });
-      }
+      const decoded = token
+        ? (jwt.verify(token, JWT_SECRET!) as Decoded)
+        : { id: "", role: "USER" };
 
       req.decoded = decoded;
       return handler(req, res);
-    } catch (error) {
-      console.log(error);
-      return res.status(401).json({
-        status: 401,
-        message: "Unauthorized",
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      req.decoded = { id: "", role: "USER" };
+      return handler(req, res);
     }
   };
+}
+
+interface Decoded {
+  id: string;
+  role: "ADMIN" | "USER";
 }
