@@ -110,7 +110,7 @@ const DetailCoffeePage = () => {
             alt={item.name}
             width={400}
             height={400}
-            className="w-80 h-auto object-cover rounded-lg mx-auto"
+            className="w-80 h-auto object-cover rounded-lg mx-auto my-4"
           />
           <table className="min-w-full table-auto">
             <thead className="text-white">

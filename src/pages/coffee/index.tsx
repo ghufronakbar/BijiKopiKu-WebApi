@@ -49,6 +49,7 @@ const CoffeePage = () => {
   const [form, setForm] = useState<CoffeeDTO>(initCoffeeDTO);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string>();
+  const [picture, setPicture] = useState<File | null>(null);
   const filteredData = data.filter(
     (item) =>
       item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -67,8 +68,12 @@ const CoffeePage = () => {
 
   const handleCreate = async () => {
     try {
+      if (picture === null) return toast.error("Harap upload gambar");
       setIsOpen(false);
-      await axiosInstance.post("/coffee", form);
+      const res = await axiosInstance.post<ResOk<ResCoffee>>("/coffee", form);
+      const formData = new FormData();
+      formData.append("picture", picture);
+      await axiosInstance.put(`/coffee/${res.data.data.id}/picture`, formData);
       fetchData();
       setForm(initCoffeeDTO);
       toast.success("Produk berhasil ditambahkan");
@@ -201,12 +206,29 @@ const CoffeePage = () => {
         confirmText="Simpan"
         onConfirm={form.id ? handleEdit : handleCreate}
       >
-        <div className="flex flex-col w-full gap-2">
+        <div className="flex flex-col w-full gap-2 overflow-auto max-h-96">
           <label className="text-black">Nama</label>
           <input
             className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <label className="text-black">Foto</label>
+          <Image
+            src={picture ? URL.createObjectURL(picture) : "/placeholder.jpg"}
+            alt=""
+            width={400}
+            height={400}
+            className="min-w-12 min-h-12 w-12 h-12 object-cover rounded-lg"
+          />
+          <input
+            type="file"
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            onChange={(e) => {
+              if (e.target.files) {
+                setPicture(e.target.files[0]);
+              }
+            }}
           />
           <label className="text-black">Harga</label>
           <input
