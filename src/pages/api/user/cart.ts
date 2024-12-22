@@ -54,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const response = coffees.map((coffee) => {
       const cart = carts.find((cart) => cart.id === coffee.id);
-      return { ...coffee, amount: Number(cart?.quantity) || 0 };
+      return { ...coffee, quantity: Number(cart?.quantity) || 0 };
     });
 
     return res
