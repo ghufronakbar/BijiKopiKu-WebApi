@@ -1,9 +1,12 @@
+import Button from "@/components/Button";
 import Navigation from "@/components/Navigation";
 import { Toaster } from "@/components/ui/toaster";
 import axiosInstance from "@/config/axiosInstance";
-import { ResOk } from "@/models/Api";
+import toast from "@/helper/toast";
+import { ResErr, ResOk } from "@/models/Api";
 import formatDate from "@/utils/format/formatDate";
 import { $Enums, Coffee, OrderItem, Order } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -55,7 +58,31 @@ const DetailCoffeePage = () => {
         return "bg-gray-100 text-gray-600";
     }
   };
-  
+
+  const clickUpload = () => {
+    document.getElementById("file")?.click();
+  };
+
+  const onChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      toast.loading();
+      const formData = new FormData();
+      formData.append("picture", e.target.files[0]);
+      try {
+        await axiosInstance.put<ResOk<ResCoffee>>(
+          `/coffee/${id}/picture`,
+          formData
+        );
+        fetchData();
+        toast.success("Gambar berhasil diubah");
+      } catch (error) {
+        const err = error as ResErr;
+        toast.error(err?.response?.data?.message);
+        console.log(error);
+      }
+    }
+  };
+
   if (!item) {
     return (
       <div className="w-full h-screen bg-accent text-primary flex items-center justify-center">
@@ -65,10 +92,26 @@ const DetailCoffeePage = () => {
   }
 
   return (
-    <Navigation title={item.name}>
+    <Navigation
+      title={item.name}
+      childredHeader={<Button onClick={clickUpload}>Ubah Gambar</Button>}
+    >
       <div className="w-full flex flex-col gap-2">
+        <input
+          type="file"
+          className="hidden"
+          id="file"
+          onChange={onChangeFile}
+        />
         {/* Tabel untuk Menampilkan Detail Kopi */}
         <div className="w-full bg-white rounded-lg p-4 shadow-lg">
+          <Image
+            src={item.picture || "/placeholder.jpg"}
+            alt={item.name}
+            width={400}
+            height={400}
+            className="w-80 h-auto object-cover rounded-lg mx-auto"
+          />
           <table className="min-w-full table-auto">
             <thead className="text-white">
               <tr className="rounded-lg bg-primary">
@@ -105,11 +148,17 @@ const DetailCoffeePage = () => {
               </tr>
               <tr>
                 <td className="px-4 py-2 font-semibold">
-                  Dikonsumsi dengan Gula
+                  Cocok dikonsumsi dengan Gula
                 </td>
                 <td className="px-4 py-2">
                   {item.isItForSweet ? "Ya" : "Tidak"}
                 </td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 font-semibold">Deskripsi:</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">{item.desc}</td>
               </tr>
             </tbody>
           </table>

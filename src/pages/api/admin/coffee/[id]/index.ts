@@ -34,6 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         taste,
         isItForSweet,
         flavor,
+        desc,
       } = req.body as CoffeeDTO;
       console.log(req.body);
       if (!name || !price || !type || !taste || !flavor) {
@@ -49,6 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         taste,
         isItForSweet,
         flavor,
+        desc,
       });
       return res
         .status(200)
@@ -101,6 +103,7 @@ interface CoffeeDTO {
   taste: $Enums.TasteLevel;
   isItForSweet: boolean;
   flavor: $Enums.Flavor;
+  desc: string;
 }
 
 async function edit(id: string, data: CoffeeDTO) {

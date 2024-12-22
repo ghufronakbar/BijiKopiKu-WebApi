@@ -66,9 +66,12 @@ enum OrderStatus {
 }
 
 model Coffee {
-  id                    String     @id @default(uuid())
-  name                  String
-  price                 Float
+  id      String @id @default(uuid())
+  name    String
+  price   Float
+  picture String?
+  desc    String @db.Text
+
   isForCoffeeEnthusiast Boolean // Apakah kamu sering konsumsi kopi?
   type                  CoffeeType // Jenis kopi mana yang kamu suka?
   taste                 TasteLevel // Tingkat rasa kopi mana yang kamu suka

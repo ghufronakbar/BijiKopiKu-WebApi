@@ -13,7 +13,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .json({ success: false, message: "Pesanan tidak ditemukan" });
       return res
         .status(200)
-        .json({ status: 200, message: "Success", data: order });
+        .json({ success: true, message: "Success", data: order });
     }
     if (req.method === "PATCH") {
       const check = await byId(id);
@@ -24,7 +24,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const order = await cancelOrder(id);
       return res
         .status(200)
-        .json({ status: 200, message: "Success", data: order });
+        .json({
+          success: true,
+          message: "Berhasil membatalkan pesanan",
+          data: order,
+        });
     } else {
       return res
         .status(405)

@@ -16,12 +16,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const formattedResponse = {
         ...response,
         sold: _count?.orderItems || 0,
-        amount: Number(quantity) || 0,
+        quantity: Number(quantity) || 0,
       };
 
       return res
         .status(200)
-        .json({ status: 200, message: "Success", data: formattedResponse });
+        .json({ success: true, message: "Success", data: formattedResponse });
     } else {
       return res
         .status(405)

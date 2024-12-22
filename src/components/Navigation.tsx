@@ -7,7 +7,7 @@ interface NavItem {
   href: string;
 }
 
-const navItems: NavItem[] = [  
+const navItems: NavItem[] = [
   { name: "Produk", href: "/coffee" },
   { name: "Pesanan", href: "/order" },
   { name: "Logout", href: "/logout" },
@@ -16,9 +16,10 @@ const navItems: NavItem[] = [
 interface Props {
   children?: React.ReactNode;
   title?: string;
+  childredHeader?: React.ReactNode;
 }
 
-const Navigation = ({ children, title }: Props) => {
+const Navigation = ({ children, title, childredHeader }: Props) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -100,9 +101,13 @@ const Navigation = ({ children, title }: Props) => {
         )}
 
         <main className="p-6 bg-accent mt-16 md:mt-0 flex flex-col min-h-screen">
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-semibold mb-4 mt-8">
-            {title}
-          </h1>
+          <div className="flex flex-col md:flex-row gap-2 justify-between md:items-center items-start md:justify-between w-full mb-4 mt-8">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-semibold">
+              {title}
+            </h1>
+
+            {childredHeader}
+          </div>
           {children}
         </main>
       </div>

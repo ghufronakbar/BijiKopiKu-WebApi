@@ -9,6 +9,7 @@ import { ResErr, ResOk } from "@/models/Api";
 import formatDate from "@/utils/format/formatDate";
 import formatRupiah from "@/utils/format/formatRupiah";
 import { Coffee } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -27,6 +28,7 @@ interface CoffeeDTO {
   taste: string;
   isItForSweet: boolean;
   flavor: string;
+  desc: string;
 }
 
 const initCoffeeDTO: CoffeeDTO = {
@@ -38,6 +40,7 @@ const initCoffeeDTO: CoffeeDTO = {
   taste: "Light",
   isItForSweet: false,
   flavor: "Asam",
+  desc: "",
 };
 
 const CoffeePage = () => {
@@ -139,7 +142,15 @@ const CoffeePage = () => {
               {filteredData.map((item, index) => (
                 <tr key={item.id}>
                   <td className="px-4 py-2">{index + 1}</td>
-                  <td className="px-4 py-2">{item.id}</td>
+                  <td className="px-4 py-2">
+                    <Image
+                      src={item?.picture || "/placeholder.jpg"}
+                      alt=""
+                      width={400}
+                      height={400}
+                      className="min-w-12 min-h-12 w-12 h-12 object-cover rounded-lg"
+                    />
+                  </td>
                   <td className="px-4 py-2">
                     <div className="flex flex-col font-semibold">
                       {item.name}
@@ -166,7 +177,7 @@ const CoffeePage = () => {
                         setIsOpen(true);
                       }}
                     >
-                      Detail
+                      Edit
                     </button>
                     <Link href={`/coffee/${item.id}`}>
                       <button className="bg-white text-primary px-4 py-2 rounded-md shadow-sm hover:bg-gray-100">
@@ -204,6 +215,12 @@ const CoffeePage = () => {
             onChange={(e) =>
               setForm({ ...form, price: Number(e.target.value) })
             }
+          />
+          <label className="text-black">Deskripsi</label>
+          <textarea
+            className="bg-neutral-100 px-2 rounded-md py-2 mb-2"
+            value={form.desc}
+            onChange={(e) => setForm({ ...form, desc: e.target.value })}
           />
           <label className="text-black">Cocok untuk Pecinta Kopi</label>
           <select
