@@ -30,7 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
       return res
         .status(200)
-        .json({ status: 200, message: "Success", data: coffees });
+        .json({ success: true, message: "Success", data: coffees });
     } else {
       return res
         .status(405)
