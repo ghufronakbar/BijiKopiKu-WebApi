@@ -8,7 +8,7 @@ EXPECTED REQ.BODY:
     "carts": [
         {
             "id": "someuuid",
-            "amount": 1
+            "quantity": 1
         }
     ]
 }
@@ -23,7 +23,7 @@ filter in id and isDeleted
     "data": [
         {
             ...coffee,
-            "amount": 1
+            "quantity": 1
         }
     ]
 }
@@ -31,7 +31,7 @@ filter in id and isDeleted
 
 interface Cart {
   id: string;
-  amount: number;
+  quantity: number;
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -54,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const response = coffees.map((coffee) => {
       const cart = carts.find((cart) => cart.id === coffee.id);
-      return { ...coffee, amount: Number(cart?.amount) || 0 };
+      return { ...coffee, amount: Number(cart?.quantity) || 0 };
     });
 
     return res

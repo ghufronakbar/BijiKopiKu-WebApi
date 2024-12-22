@@ -4,7 +4,7 @@ import userAuth from "@/middleware/userAuth";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { id, amount } = req.query as { id: string; amount: string };
+    const { id, quantity } = req.query as { id: string; quantity: string };
     if (req.method === "GET") {
       const coffee = await getById(id);
       if (!coffee)
@@ -16,7 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const formattedResponse = {
         ...response,
         sold: _count?.orderItems || 0,
-        amount: Number(amount) || 0,
+        amount: Number(quantity) || 0,
       };
 
       return res
