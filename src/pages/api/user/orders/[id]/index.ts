@@ -6,11 +6,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { id } = req.query as { id: string };
     if (req.method === "GET") {
-      const order = await GET(id);
+      const order = await byId(id);
       if (!order)
         return res
           .status(200)
           .json({ success: false, message: "Pesanan tidak ditemukan" });
+      return res
+        .status(200)
+        .json({ status: 200, message: "Success", data: order });
+    }
+    if (req.method === "PATCH") {
+      const check = await byId(id);
+      if (!check)
+        return res
+          .status(200)
+          .json({ success: false, message: "Pesanan tidak ditemukan" });
+      const order = await cancelOrder(id);
       return res
         .status(200)
         .json({ status: 200, message: "Success", data: order });
@@ -27,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function GET(id: string) {
+async function byId(id: string) {
   return await prisma.order.findUnique({
     include: {
       orderItems: {
@@ -37,6 +48,13 @@ async function GET(id: string) {
       },
     },
     where: { id },
+  });
+}
+
+async function cancelOrder(id: string) {
+  return await prisma.order.update({
+    where: { id },
+    data: { status: "Dibatalkan" },
   });
 }
 
