@@ -54,12 +54,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const response = coffees.map((coffee) => {
       const cart = carts.find((cart) => cart.id === coffee.id);
-      return { ...coffee, amount: cart?.amount || 0 };
+      return { ...coffee, amount: Number(cart?.amount) || 0 };
     });
 
     return res
       .status(200)
-      .json({ status: 200, message: "Success", data: response });
+      .json({ success: true, message: "Success", data: response });
   } catch (error) {
     console.log(error);
     return res

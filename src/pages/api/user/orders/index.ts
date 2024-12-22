@@ -24,7 +24,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .json({ success: false, message: "Pengguna tidak ditemukan" });
       const data = req.body as CheckoutDTO;
 
-      // Validasi Coffee IDs dan ambil harga dari database
       const coffeeData = await validateCoffeIds(
         data.orderItems.map((item) => item.coffeeId)
       );
@@ -34,7 +33,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .json({ success: false, message: "Produk tidak ditemukan" });
       }
 
-      // Validasi pengguna
       const checkUser = await validateUser(id);
       if (!checkUser) {
         return res
@@ -42,10 +40,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .json({ success: false, message: "Pengguna tidak ditemukan" });
       }
 
-      // Buat orderItems dengan total harga yang dihitung dari database
       const orderItems = data.orderItems.map((item) => {
         const coffee = coffeeData.find((c) => c.id === item.coffeeId);
-        if (!coffee) throw new Error("Produk tidak valid"); // Langkah tambahan untuk keamanan
+        if (!coffee) throw new Error("Produk tidak valid");
         return {
           coffeeId: item.coffeeId,
           quantity: item.quantity,
@@ -53,7 +50,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         };
       });
 
-      // Buat checkout
       const order = await createCheckout(id, orderItems);
       return res
         .status(200)

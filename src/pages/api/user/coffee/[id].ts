@@ -4,7 +4,7 @@ import userAuth from "@/middleware/userAuth";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { id } = req.query as { id: string };
+    const { id, amount } = req.query as { id: string; amount: string };
     if (req.method === "GET") {
       const coffee = await getById(id);
       if (!coffee)
@@ -12,8 +12,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           .status(200)
           .json({ success: false, message: "Data tidak ditemukan" });
 
-      const { _count, ...response } = coffee; 
-      const formattedResponse = { ...response, sold: _count?.orderItems || 0 };
+      const { _count, ...response } = coffee;
+      const formattedResponse = {
+        ...response,
+        sold: _count?.orderItems || 0,
+        amount: Number(amount) || 0,
+      };
 
       return res
         .status(200)
