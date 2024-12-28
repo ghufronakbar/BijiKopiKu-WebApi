@@ -25,7 +25,7 @@ const LoginPage = () => {
       );
       Cookies.set("accessToken", data.data.accessToken);
       toast.success("Berhasil login");
-      router.push("/order");
+      router.push("/dashboard");
     } catch (error) {
       const err = error as ResErr;
       toast.error(err.response?.data.message);
